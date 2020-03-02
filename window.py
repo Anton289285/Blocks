@@ -228,6 +228,20 @@ class Game:
                 for i in range(len(self.current_set)):
                         self.current_set[i].move_right()
 
+    def move_down_with_key(self, event):
+        move_down_pass = False
+        for i in range(len(self.current_set)):
+            if (self.current_set[i].row + 1 >= quantity_of_row):
+                move_down_pass = True
+            for j in range(len(self.heap)):
+                if (((self.current_set[i].row + 1) == self.heap[j].row) and (
+                        (self.current_set[i].column) == self.heap[j].column)):
+                    move_down_pass = True
+        if (move_down_pass == False) and (self.game_status == "play"):
+            self.zero_row = self.zero_row + 1
+            for i in range(len(self.current_set)):
+                self.current_set[i].move_down()
+
     def move_down(self):
         move_down_pass = False
         for i in range(len(self.current_set)):
@@ -257,9 +271,8 @@ class Game:
             self.number_of_next_set = randint(1, 7)
             self.new_next_set()
             if (self.check_game_over() == True):
-
                 self.tetris_window.label_game_status["text"] = "restart press R"
-                # self.tetris_window.root.after(3000, self.game_restart)
+                self.game_status = "game_over"
             else:
                 self.solve = self.tetris_window.root.after(self.time_tik, self.move_down)
 
@@ -460,9 +473,9 @@ class Game:
         some_tik = time_tik_init*1000
         for i in range((some_speed - 1)):
             some_tik = some_tik - some_tik//4
-        if some_tik//1000 == 0:
+        if some_tik//1000 < 1:
             some_tik = 1
-        else: some_tik = some_tik//1000
+        else: some_tik = int(some_tik//1000)
         return some_tik
 
     def check_score(self, some_quantity_of_row_in_check):
