@@ -399,7 +399,7 @@ class Game:
             if (quantity_of_kubik_in_heap_in_row == quantity_of_columns):
                 number_of_heap_for_delete = len(self.heap) - 1
                 self.score_line = self.score_line + 1
-                self.score_speed = 1 + (self.score_line//5)
+                self.score_speed = 1 + (self.score_line//10)#10 - количество линий когда будет происходить увеличение скорости
                 quantity_of_row_in_one_check = quantity_of_row_in_one_check + 1
                 while (number_of_heap_for_delete >= 0):
                     if (self.heap[number_of_heap_for_delete].row == number_of_row):
@@ -472,7 +472,7 @@ class Game:
     def speed_to_tik(self, some_speed):
         some_tik = time_tik_init*1000
         for i in range((some_speed - 1)):
-            some_tik = some_tik - some_tik//4
+            some_tik = some_tik - some_tik//4 # 4 это на сколько  увеличиться скрость( на четверть)
         if some_tik//1000 < 1:
             some_tik = 1
         else: some_tik = int(some_tik//1000)
@@ -487,7 +487,8 @@ class Game:
         elif some_quantity_of_row_in_check == 3:
             some_score = 500
         elif some_quantity_of_row_in_check == 4:
-            some_score = 2000
+            some_score = 200
+        some_score = some_score*self.score_speed
         return some_score
 
 

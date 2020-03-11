@@ -17,4 +17,5 @@ game_tetris.new_current_set()
 game_tetris.number_of_next_set = randint(1, 7)
 game_tetris.new_next_set()
 game_tetris.move_down()
+
 mainloop()
