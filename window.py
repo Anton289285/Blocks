@@ -1,7 +1,8 @@
 from tkinter import *
 from constants import *
 from random import *
-
+import rec_mod
+import can_vid_mod
 
 class MainWindow:
     root = Tk()
@@ -18,12 +19,12 @@ class MainWindow:
     label_set = Label(frame_for_data, text='set: 0', font='arial 14', bg="light slate grey", bd=5)
     label_speed = Label(frame_for_data, text='speed: 1', font='arial 14', bg="light slate grey", bd=5)
 
+
     def __init__(self):
         self.root.title("Tetris")
         self.root.bind('<Escape>', quit)
         self.frame_for_painting.grid(column=0, row=0)
         self.canvas_for_painting.pack()
-
         self.frame_for_data.grid(column=1, row=0, sticky="n")
         self.label_score.grid(column=0, row=0, sticky="w")
         self.label_next.grid(column=0, row=1)
@@ -46,6 +47,7 @@ class MainWindow:
         for i in range(1, 4):
             self.canvas_next.create_line(xy_resolutions * i, 0,
                                          xy_resolutions * i, xy_resolutions * 4, fill="SkyBlue4")
+
 
 
 class Cube:
@@ -109,6 +111,15 @@ class Game:
         self.time_tik = time_tik_init
         self.tetris_window.label_game_status['text'] = 'play'
         self.count_pause = 3
+        self.record = rec_mod.Some_record("./record/record.txt")
+        self.canvas_vidjet = can_vid_mod.Canvas_widjet(quantity_of_columns,
+                                                       quantity_of_row,
+                                                       xy_resolutions,
+                                                       self.tetris_window.canvas_for_painting,
+                                                       self.tetris_window.root,
+                                                       self.record.recordsman)
+
+
 
     def new_current_set(self):
         if self.number_of_current_set == 1:
@@ -271,10 +282,22 @@ class Game:
             self.number_of_next_set = randint(1, 7)
             self.new_next_set()
             if (self.check_game_over() == True):
+                if (self.record.apple < self.score):
+                    self.game_status = "enter record"
+                    self.canvas_vidjet.draw(self.score, self.record.recordsman)
+                    self.tetris_window.root.bind("<Return>", self.enter_record)
+
                 self.tetris_window.label_game_status["text"] = "restart press R"
                 self.game_status = "game_over"
             else:
                 self.solve = self.tetris_window.root.after(self.time_tik, self.move_down)
+
+    def enter_record(self, event):
+        string = self.canvas_vidjet.entry.get()
+        self.record.update(string, self.score)
+        self.canvas_vidjet.erase()
+        self.tetris_window.root.unbind("<Return>")
+
 
     def rotate_right(self, event):
         rotate_right_pass = False
@@ -424,7 +447,6 @@ class Game:
                     number_of_kubik_in_heap].column) and (
                         self.current_set[number_of_kubik_in_current].row == self.heap[number_of_kubik_in_heap].row):
                     check = True
-        # print('check = ', check)
         return check
 
     def game_restart(self, event):
@@ -472,7 +494,7 @@ class Game:
     def speed_to_tik(self, some_speed):
         some_tik = time_tik_init*1000
         for i in range((some_speed - 1)):
-            some_tik = some_tik - some_tik//4 # 4 это на сколько  увеличиться скрость( на четверть)
+            some_tik = some_tik - some_tik//5 # 4 это на сколько  увеличиться скрость( на четверть)
         if some_tik//1000 < 1:
             some_tik = 1
         else: some_tik = int(some_tik//1000)
